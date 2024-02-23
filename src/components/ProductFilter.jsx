@@ -1,136 +1,68 @@
 import { useState, useEffect } from "react";
-import ky from "ky";
-import { API_URL, getProductDetails } from "../api";
-import { generateAuthHeader } from "../utils";
-import ProductList from "./ProductList";
+import FilterDropdown from "./FilterDropdown";
+import { getFieldValues, getFields, getFilteredProductDetails } from "../api";
 
-const ProductFilter = () => {
+const ProductFilter = ({ setFilteredProducts }) => {
   const [fields, setFields] = useState([]);
   const [selectedField, setSelectedField] = useState("");
   const [fieldValues, setFieldValues] = useState([]);
   const [selectedValue, setSelectedValue] = useState("");
-  const [filteredProducts, setFilteredProducts] = useState([]);
+
+  const getFieldsProduct = async () => {
+    const fields = await getFields();
+    setFields(fields);
+  };
+
+  const getFieldValuesProduct = async () => {
+    const fieldValues = await getFieldValues(selectedField);
+    setFieldValues(fieldValues);
+  };
+
+  const getFilteredProducts = async () => {
+    const filteredProducts = await getFilteredProductDetails({
+      selectedField,
+      selectedValue,
+    });
+    setFilteredProducts(filteredProducts);
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await ky
-          .post(API_URL, {
-            json: {
-              action: "get_fields",
-              // params: {},
-            },
-            headers: {
-              "X-Auth": generateAuthHeader(),
-            },
-          })
-          .json();
-        setFields(response.result.filter((field) => field !== null));
-      } catch (error) {
-        console.error("Error fetching fields:", error);
-      }
-    };
-
-    fetchData();
+    getFieldsProduct();
   }, []);
 
   useEffect(() => {
-    const fetchFieldValues = async () => {
-      if (selectedField) {
-        try {
-          const response = await ky
-            .post(API_URL, {
-              json: {
-                action: "get_fields",
-                params: { field: selectedField, offset: 0, limit: 10 },
-              },
-              headers: {
-                "X-Auth": generateAuthHeader(),
-              },
-            })
-            .json();
-          setFieldValues(response.result.filter((value) => value !== null));
-        } catch (error) {
-          console.error("Error fetching field values:", error);
-        }
-      }
-    };
-
-    fetchFieldValues();
+    if (selectedField) {
+      getFieldValuesProduct();
+    } else {
+      setFieldValues([]);
+      setSelectedValue("");
+      setFilteredProducts([]);
+    }
   }, [selectedField]);
 
   useEffect(() => {
-    const filterProducts = async () => {
-      if (selectedValue && selectedField) {
-        try {
-          const response = await ky
-            .post(API_URL, {
-              json: {
-                action: "filter",
-                params: { [selectedField]: selectedValue },
-              },
-              headers: {
-                "X-Auth": generateAuthHeader(),
-              },
-            })
-            .json();
-
-          const res = await getProductDetails(response.result);
-          setFilteredProducts(res);
-        } catch (error) {
-          console.error("Error filtering products:", error);
-        }
-      }
-    };
-
-    filterProducts();
+    if (selectedValue && selectedField) {
+      getFilteredProducts();
+    } else {
+      setFilteredProducts([]);
+    }
   }, [selectedValue, selectedField]);
 
   return (
     <div className="container mx-auto p-4">
       <div className="flex flex-col md:flex-row gap-4">
-        <div className="mb-4 flex items-center gap-4">
-          <label htmlFor="field" className="block mb-1">
-            Выбрать поле:
-          </label>
-          <select
-            id="field"
-            className="border border-gray-400"
-            value={selectedField}
-            onChange={(e) => setSelectedField(e.target.value)}
-          >
-            <option value="">Выбрать...</option>
-            {fields.map((field, index) => (
-              <option key={index} value={field}>
-                {field}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="mb-4 flex items-center gap-4">
-          <label htmlFor="value" className="block mb-1">
-            Выбрать значение:
-          </label>
-          <select
-            id="value"
-            className="border border-gray-400"
-            value={selectedValue}
-            onChange={(e) => setSelectedValue(e.target.value)}
-          >
-            <option value="">Выбрать...</option>
-            {fieldValues.map((value, index) => (
-              <option key={index} value={value}>
-                {value}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <div>
-        <h2 className="font-bold text-lg mb-2">Отфильтрованные товары:</h2>
-        <ProductList products={filteredProducts} />
+        <FilterDropdown
+          label="Выбрать поле:"
+          options={fields}
+          value={selectedField}
+          onChange={setSelectedField}
+        />
+        <FilterDropdown
+          label="Выбрать значение:"
+          options={fieldValues}
+          value={selectedValue}
+          onChange={setSelectedValue}
+        />
       </div>
     </div>
   );

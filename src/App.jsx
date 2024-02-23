@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import ProductList from "./components/ProductList";
-import Pagination from "./components/Pagination";
 import ProductFilter from "./components/ProductFilter";
+import Pagination from "./components/Pagination";
 import { getIdsProducts, getTotalCountProducts } from "./api";
 
 const App = () => {
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   const getPageCount = async () => {
     const totalCountProducts = await getTotalCountProducts();
@@ -37,21 +38,21 @@ const App = () => {
 
   return (
     <div className="bg-gray-200 py-6 min-h-screen">
-      {/* <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        nextPage={nextPage}
-        prevPage={prevPage}
-      /> */}
-      <ProductFilter />
-      <h1 className="text-3xl font-bold mb-8 mx-10">Каталог товаров</h1>
-      <ProductList products={products} />
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        nextPage={nextPage}
-        prevPage={prevPage}
-      />
+      <div className="container mx-auto">
+        <h1 className="text-3xl font-bold mb-2 mx-2">Каталог товаров</h1>
+        <ProductFilter setFilteredProducts={setFilteredProducts} />
+        <ProductList
+          products={filteredProducts.length > 0 ? filteredProducts : products}
+        />
+        {!filteredProducts.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            nextPage={nextPage}
+            prevPage={prevPage}
+          />
+        )}
+      </div>
     </div>
   );
 };

@@ -17,19 +17,21 @@ export const getTotalCountProducts = async () => {
       headers: {
         "X-Auth": generateAuthHeader(),
       },
+      retry: {
+        limit: 3,
+        methods: ["post"],
+      },
     });
 
     if (totalCountResponse.ok) {
       const totalCountData = await totalCountResponse.json();
       const totalCount = totalCountData.result.length;
-
       return Math.ceil(totalCount / pageSize);
     } else {
       throw new Error("Ошибка при получении общего числа продуктов");
     }
   } catch (error) {
     console.error("API Error идентификатор:", error);
-    return getTotalCountProducts();
   }
 };
 
@@ -47,6 +49,10 @@ export const getIdsProducts = async (currentPage) => {
       headers: {
         "X-Auth": generateAuthHeader(),
       },
+      retry: {
+        limit: 3,
+        methods: ["post"],
+      },
     });
 
     if (response.ok) {
@@ -61,7 +67,6 @@ export const getIdsProducts = async (currentPage) => {
     }
   } catch (error) {
     console.error("API Error идентификатор:", error);
-    return getIdsProducts(currentPage);
   }
 };
 
@@ -75,6 +80,10 @@ export const getProductDetails = async (productIds) => {
       },
       headers: {
         "X-Auth": generateAuthHeader(),
+      },
+      retry: {
+        limit: 3,
+        methods: ["post"],
       },
     });
 
@@ -98,6 +107,95 @@ export const getProductDetails = async (productIds) => {
     }
   } catch (error) {
     console.error("API Error идентификатор:", error);
-    return getProductDetails(productIds);
+  }
+};
+
+// Получение полей
+export const getFields = async () => {
+  try {
+    const response = await ky.post(API_URL, {
+      json: {
+        action: "get_fields",
+      },
+      headers: {
+        "X-Auth": generateAuthHeader(),
+      },
+      retry: {
+        limit: 3,
+        methods: ["post"],
+      },
+    });
+
+    if (response.ok) {
+      const responseData = await response.json();
+      const validItems = responseData.result.filter((value) => value !== null);
+      return validItems;
+    } else {
+      throw new Error("Ошибка при получении товаров");
+    }
+  } catch (error) {
+    console.error("API Error идентификатор:", error);
+  }
+};
+
+// Получение значений полей
+export const getFieldValues = async (selectedField) => {
+  try {
+    const response = await ky.post(API_URL, {
+      json: {
+        action: "get_fields",
+        params: { field: selectedField },
+      },
+      headers: {
+        "X-Auth": generateAuthHeader(),
+      },
+      retry: {
+        limit: 3,
+        methods: ["post"],
+      },
+    });
+
+    if (response.ok) {
+      const newResponse = await response.json();
+      const validItems = newResponse.result.filter((value) => value !== null);
+      const uniqueValuesArray = Array.from(new Set(validItems));
+
+      return uniqueValuesArray;
+    } else {
+      throw new Error("Ошибка при получении товаров");
+    }
+  } catch (error) {
+    console.error("API Error идентификатор:", error);
+  }
+};
+
+// Получение отфильтрованных товаров
+export const getFilteredProductDetails = async ({
+  selectedField,
+  selectedValue,
+}) => {
+  try {
+    const response = await ky.post(API_URL, {
+      json: {
+        action: "filter",
+        params: { [selectedField]: selectedValue },
+      },
+      headers: {
+        "X-Auth": generateAuthHeader(),
+      },
+      retry: {
+        limit: 3,
+        methods: ["post"],
+      },
+    });
+
+    if (response.ok) {
+      const newResponse = await response.json();
+      return await getProductDetails(newResponse.result);
+    } else {
+      throw new Error("Ошибка при получении товаров");
+    }
+  } catch (error) {
+    console.error("API Error идентификатор:", error);
   }
 };

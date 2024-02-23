@@ -1,13 +1,19 @@
 const Product = ({ id, name, price, brand }) => {
   return (
-    <div className="bg-white shadow-md rounded px-4 md:px-8 pt-6 pb-4 mb-4">
+    <div className="bg-white shadow-md rounded px-2 pt-4 pb-2 hover:shadow-xl transition">
       <div className="mb-4">
         <div className="text-gray-900 font-semibold text-base mb-2">
-          ID: {id}
+          ID: <span className="font-normal">{id}</span>
         </div>
-        <div className="text-gray-700 text-base">Название: {name}</div>
-        <div className="text-gray-700 text-base">Цена: {price}</div>
-        <div className="text-gray-700 text-base">Бренд: {brand}</div>
+        <div className="text-gray-700 font-semibold text-base">
+          Название: <span className="font-normal">{name}</span>
+        </div>
+        <div className="text-gray-700 font-semibold text-base">
+          Цена: <span className="font-normal">{price}</span>
+        </div>
+        <div className="text-gray-700 font-semibold text-base">
+          Бренд: <span className="font-normal">{brand}</span>
+        </div>
       </div>
     </div>
   );
