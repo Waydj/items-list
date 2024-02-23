@@ -1,7 +1,7 @@
 import ky from "ky";
 import { generateAuthHeader } from "../utils";
 
-const API_URL = import.meta.env.VITE_API_URL;
+export const API_URL = import.meta.env.VITE_API_URL;
 export const API_PASSWORD = import.meta.env.VITE_API_PASSWORD;
 
 const pageSize = 50;
@@ -66,7 +66,7 @@ export const getIdsProducts = async (currentPage) => {
 };
 
 // Получение информации о товарах
-const getProductDetails = async (productIds) => {
+export const getProductDetails = async (productIds) => {
   try {
     const response = await ky.post(API_URL, {
       json: {

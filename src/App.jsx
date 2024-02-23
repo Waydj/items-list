@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import ProductList from "./components/ProductList";
+import Pagination from "./components/Pagination";
+import ProductFilter from "./components/ProductFilter";
 import { getIdsProducts, getTotalCountProducts } from "./api";
 
 const App = () => {
@@ -12,9 +14,17 @@ const App = () => {
     setTotalPages(totalCountProducts);
   };
 
-  const getProducts = async () => {
-    const products = await getIdsProducts(currentPage);
+  const getProducts = async (page) => {
+    const products = await getIdsProducts(page);
     setProducts(products);
+  };
+
+  const nextPage = () => {
+    setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev));
+  };
+
+  const prevPage = () => {
+    setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));
   };
 
   useEffect(() => {
@@ -22,14 +32,26 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    getProducts();
-  }, []);
+    getProducts(currentPage);
+  }, [currentPage]);
 
   return (
-    <div className="bg-gray-200 min-h-screen">
-      <div className="py-8">
-        <ProductList products={products} />
-      </div>
+    <div className="bg-gray-200 py-6 min-h-screen">
+      {/* <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        nextPage={nextPage}
+        prevPage={prevPage}
+      /> */}
+      <ProductFilter />
+      <h1 className="text-3xl font-bold mb-8 mx-10">Каталог товаров</h1>
+      <ProductList products={products} />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        nextPage={nextPage}
+        prevPage={prevPage}
+      />
     </div>
   );
 };
