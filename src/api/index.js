@@ -178,7 +178,10 @@ export const getFilteredProductDetails = async ({
     const response = await ky.post(API_URL, {
       json: {
         action: "filter",
-        params: { [selectedField]: selectedValue },
+        params: {
+          [selectedField]:
+          selectedField == "price" ? +selectedValue : selectedValue,
+        },
       },
       headers: {
         "X-Auth": generateAuthHeader(),
