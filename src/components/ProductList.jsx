@@ -9,7 +9,7 @@ const ProductList = ({ products }) => {
           <Product
             key={product.id}
             id={product.id}
-            name={product.name}
+            name={product.product}
             price={product.price}
             brand={product.brand}
           />
