@@ -9,7 +9,7 @@ const Product = ({ id, name, price, brand }) => {
           Название: <span className="font-normal">{name}</span>
         </div>
         <div className="text-gray-700 font-semibold text-base">
-          Цена: <span className="font-normal">{price}</span>
+          Цена: <span className="font-normal">{price} руб.</span>
         </div>
         <div className="text-gray-700 font-semibold text-base">
           Бренд: <span className="font-normal">{brand}</span>

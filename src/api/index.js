@@ -180,7 +180,7 @@ export const getFilteredProductDetails = async ({
         action: "filter",
         params: {
           [selectedField]:
-          selectedField == "price" ? +selectedValue : selectedValue,
+            selectedField == "price" ? +selectedValue : selectedValue,
         },
       },
       headers: {

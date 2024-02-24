@@ -4,7 +4,7 @@ const FIELDS = {
   price: "Цена",
 };
 
-const FilterDropdown = ({ label, options, value, onChange }) => {
+const FilterDropdown = ({ label, options, value, onChange, disabled }) => {
   return (
     <div className="flex items-center gap-4">
       <label htmlFor={label} className="block mb-1">
@@ -15,6 +15,7 @@ const FilterDropdown = ({ label, options, value, onChange }) => {
         className="border border-gray-400"
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
       >
         <option value="">Выбрать...</option>
         {options.map((option, index) => (
